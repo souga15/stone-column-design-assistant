@@ -16,29 +16,64 @@ from datetime import datetime
 
 st.set_page_config(page_title="Stone Column Design Assistant V6", page_icon="🗿", layout="wide")
 
-# STYLING
+# STYLING & VIEW TRANSITION API
 st.markdown("""
 <style>
+    /* Enable Chrome's View Transition API for Streamlit reruns */
+    @view-transition {
+        navigation: auto;
+    }
+
+    /* Universal Smooth Fade-In for the entire app */
+    .block-container {
+        animation: smoothFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes smoothFadeIn {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Hide default Streamlit elements */
     #MainMenu {visibility: hidden;} footer {visibility: hidden;}
+    
+    /* Header Styling */
     .main-header {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         padding: 2.5rem; border-radius: 15px; margin-bottom: 2rem;
         box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        animation: gradient-animation 3s ease infinite; background-size: 200% 200%;
+        animation: gradient-animation 4s ease infinite; background-size: 200% 200%;
     }
+    
     @keyframes gradient-animation {
         0% { background-position: 0% 50%; }
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
     }
+    
     .main-header h1 { color: white; font-size: 2.8rem; font-weight: 700; margin: 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
     .main-header p { color: rgba(255,255,255,0.95); font-size: 1.2rem; margin-top: 0.5rem; }
-    .stMetric { background: linear-gradient(135deg, #1e2129 0%, #2d3139 100%); padding: 1.5rem;
-        border-radius: 12px; border-left: 4px solid #667eea; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.3s ease; }
-    .stMetric:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(102,126,234,0.3); }
+    
+    /* Metric Card Styling with Smooth Hover Transitions */
+    .stMetric { 
+        background: linear-gradient(135deg, #1e2129 0%, #2d3139 100%); 
+        padding: 1.5rem;
+        border-radius: 12px; border-left: 4px solid #667eea; 
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease; 
+    }
+    .stMetric:hover { 
+        transform: translateY(-8px) scale(1.02); 
+        box-shadow: 0 12px 30px rgba(102,126,234,0.4); 
+    }
+    
     h2, h3 { color: #667eea; font-weight: 600; padding-bottom: 0.5rem; border-bottom: 2px solid rgba(102,126,234,0.3); margin-top: 2rem; }
-    .info-card { background: linear-gradient(135deg, #2d3139 0%, #3d4149 100%); padding: 1.5rem;
-        border-radius: 10px; border-left: 4px solid #764ba2; margin: 1rem 0; }
+    
+    .info-card { 
+        background: linear-gradient(135deg, #2d3139 0%, #3d4149 100%); 
+        padding: 1.5rem;
+        border-radius: 10px; border-left: 4px solid #764ba2; margin: 1rem 0; 
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -120,7 +155,7 @@ def assess_safety(FS, reliable):
 
 # HEADER
 st.markdown('<div class="main-header"><h1>Stone Column Design Assistant V4</h1>'
-           '<p>AI-Powered Geotechnical Design with Comprehensive Analytics</p></div>', unsafe_allow_html=True)
+            '<p>AI-Powered Geotechnical Design with Comprehensive Analytics</p></div>', unsafe_allow_html=True)
 
 # SIDEBAR
 with st.sidebar:
@@ -257,8 +292,9 @@ if heat:
                          height=600, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
         st.plotly_chart(fig, use_container_width=True)
         
+        # Fixed tuple unpacking for Z[oi] to display cleanly
         oi = np.unravel_index(np.argmax(Z), Z.shape)
-        st.success(f"Optimal: {p1n}={p1v[oi[1]]:.2f}, {p2n}={p2v[oi[0]]:.2f}, {outn}={Z[oi]:.2f}")
+        st.success(f"Optimal: {p1n}={p1v[oi[1]]:.2f}, {p2n}={p2v[oi[0]]:.2f}, {outn}={Z[oi[0], oi[1]]:.2f}")
     st.markdown("---")
 
 # 3D SURFACE
@@ -337,6 +373,6 @@ c3.metric("Spacing", f"{der['spacing']:.2f} m"); c3.metric("L/D", f"{der['slende
 # FOOTER
 st.markdown("---")
 st.markdown('<div class="info-card"><b>⚠ Disclaimer</b><br>AI-assisted preliminary design only. '
-           'Final design must be verified by qualified engineers using site data and design codes.</div>', unsafe_allow_html=True)
+            'Final design must be verified by qualified engineers using site data and design codes.</div>', unsafe_allow_html=True)
 st.markdown('<div style="text-align:center; opacity:0.7; margin-top:2rem;">Stone Column Design Assistant V4 © 2026<br>'
-           'FS computed using engineering formulas: σ/P10 with correction factors</div>', unsafe_allow_html=True)
+            'FS computed using engineering formulas: σ/P10 with correction factors</div>', unsafe_allow_html=True)
